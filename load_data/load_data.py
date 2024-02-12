@@ -8,6 +8,7 @@ from joblib import dump
 from tld import get_tld
 import re
 from urllib.parse import urlparse
+import numpy as np
 
 
 def process_tld(url):
@@ -206,6 +207,9 @@ def _load_data(args):
     X = scaler.fit_transform(x)
     dump(scaler, args.scaler)
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
+    # x_train, x_test, y_train, y_test = x_train.to_numpy(), x_test.to_numpy(), y_train.to_numpy(), y_test.to_numpy()
+    x_train, x_test = np.array(x_train), np.array(x_test)
+    y_train, y_test = np.array(y_train), np.array(y_test)
 
     # Creates `data` structure to save and
     # share train and test datasets.

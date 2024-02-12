@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: malicious-url-pipeline-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.22, pipelines.kubeflow.org/pipeline_compilation_time: '2024-02-12T17:37:58.313348',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.22, pipelines.kubeflow.org/pipeline_compilation_time: '2024-02-12T21:27:03.470565',
     pipelines.kubeflow.org/pipeline_spec: '{"description": "Applies Decision Tree,
       Random Forest, k-Neighbors and SGD classifiers for Malicious URL detection problem.",
       "name": "Malicious URL Pipeline"}'}
@@ -43,9 +43,10 @@ spec:
                 best_model(0.75, 0.82, 0.79)
                 Output: The best model is: Random Forest
             """
-            f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
-            best_model = max(f_scores, key=lambda x: f_scores[x])
-            print("The best model is: ", best_model)
+            #f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
+            #best_model = max(f_scores, key=lambda x: f_scores[x])
+            # print("The best model is: ", best_model)
+            print("ok")
 
         import argparse
         _parser = argparse.ArgumentParser(prog='Best model', description='Determines the best model based on the F1-scores of different models.')
@@ -80,10 +81,10 @@ spec:
           takes F1-scores of three different models (SGD, Random Forest, Naive Bayes)\n    and
           determines which model has the highest F1-score. It then prints the name
           of the best\n    model.\n\n    Example:\n        best_model(0.75, 0.82,
-          0.79)\n        Output: The best model is: Random Forest\n    \"\"\"\n    f_scores
-          = {''SGD'': sgd, ''Random Forest'': random_forest, ''Naive Bayes'': naive_bayes}\n    best_model
-          = max(f_scores, key=lambda x: f_scores[x])\n    print(\"The best model is:
-          \", best_model)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Best
+          0.79)\n        Output: The best model is: Random Forest\n    \"\"\"\n    #f_scores
+          = {''SGD'': sgd, ''Random Forest'': random_forest, ''Naive Bayes'': naive_bayes}\n    #best_model
+          = max(f_scores, key=lambda x: f_scores[x])\n    # print(\"The best model
+          is: \", best_model)\n    print(\"ok\")\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Best
           model'', description=''Determines the best model based on the F1-scores
           of different models.'')\n_parser.add_argument(\"--sgd\", dest=\"sgd\", type=str,
           required=True, default=argparse.SUPPRESS)\n_parser.add_argument(\"--random-forest\",

@@ -23,9 +23,10 @@ def best_model(sgd: str, random_forest: str, naive_bayes: str) -> None:
         best_model(0.75, 0.82, 0.79)
         Output: The best model is: Random Forest
     """
-    f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
-    best_model = max(f_scores, key=lambda x: f_scores[x])
-    print("The best model is: ", best_model)
+    #f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
+    #best_model = max(f_scores, key=lambda x: f_scores[x])
+    # print("The best model is: ", best_model)
+    print("ok")
 
 
 @func_to_container_op

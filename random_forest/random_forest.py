@@ -37,7 +37,7 @@ def _random_forest(args):
     y_train = data['y_train']
     x_test = data['x_test']
     y_test = data['y_test']
-    model = RandomForestClassifier()
+    model = RandomForestClassifier(bootstrap=True, class_weight='balanced', max_depth=None, max_features='sqrt', n_estimators=1)
     param_grid = {
         'n_estimators': [50, 100, 150],
         'max_depth': [None, 5, 10],

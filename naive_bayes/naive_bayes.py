@@ -50,6 +50,7 @@ def _naive_bayes(args):
     best_params = grid_search.best_params_
     dump(best_model, args.model)
 
+
     with open(args.f1_score, 'w') as f1_score_file:
         f1_score_file.write(str(f1))
 
