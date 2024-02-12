@@ -1,0 +1,19 @@
+name: Load Data Function
+description: Load data from local dataset
+
+outputs:
+- {name: Data, type: LocalPath, description: 'Path where data will be stored.'}
+- {name: Scaler, type: LocalPath, description: 'Path where the scaler dump will be stored.'}
+
+
+implementation:
+  container:
+    image: prg10/load_data
+    command: [
+      python, load_data.py,
+
+      --data,
+      {outputPath: Data},
+      --scaler,
+      { outputPath: Scaler},
+    ]

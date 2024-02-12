@@ -1,0 +1,30 @@
+name: Random Forest classifier
+description: Trains a random forest classifier
+
+inputs:
+- {name: Data, type: LocalPath, description: 'Path where data is stored.'}
+outputs:
+- {name: F1-score, type: String, description: 'String representing F1-score metric'}
+- {name: ClassificationReport, type: String, description: 'String representing the classification report of the model'}
+- {name: BestParameters, type: String, description: 'String representing the best parameters for the model obtained from the grid search'}
+- {name: Model, type: LocalPath, description: 'Path where the model dump will be stored'}
+
+implementation:
+  container:
+    image: prg10/random_forest
+    command: [
+      python, random_forest.py,
+
+      --data,
+      {inputPath: Data},
+
+      --f1_score,
+      {outputPath: F1-score},
+      --classification_report,
+      { outputPath: ClassificationReport},
+      --best_params,
+      { outputPath: BestParameters},
+      --model,
+      { outputPath: Model },
+
+    ]

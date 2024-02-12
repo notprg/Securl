@@ -1,0 +1,1 @@
+{'bootstrap': True, 'class_weight': 'balanced', 'max_depth': None, 'max_features': 'sqrt', 'n_estimators': 50}

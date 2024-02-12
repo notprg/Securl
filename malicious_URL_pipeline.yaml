@@ -1,0 +1,376 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: malicious-url-pipeline-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.22, pipelines.kubeflow.org/pipeline_compilation_time: '2024-02-12T17:37:58.313348',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "Applies Decision Tree,
+      Random Forest, k-Neighbors and SGD classifiers for Malicious URL detection problem.",
+      "name": "Malicious URL Pipeline"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.22}
+spec:
+  entrypoint: malicious-url-pipeline
+  templates:
+  - name: best-model
+    container:
+      args: [--sgd, '{{inputs.parameters.stochastic-gradient-descent-classifier-ClassificationReport}}',
+        --random-forest, '{{inputs.parameters.random-forest-classifier-ClassificationReport}}',
+        --naive-bayes, '{{inputs.parameters.gaussian-naive-bayes-classifier-ClassificationReport}}']
+      command:
+      - sh
+      - -ec
+      - |
+        program_path=$(mktemp)
+        printf "%s" "$0" > "$program_path"
+        python3 -u "$program_path" "$@"
+      - |
+        def best_model(sgd, random_forest, naive_bayes):
+            """
+            Determines the best model based on the F1-scores of different models.
+
+            Args:
+                sgd (float): The F1-score of the SGD model.
+                random_forest (float): The F1-score of the Random Forest model.
+                naive_bayes (float): The F1-score of the Naive Bayes model.
+
+            Returns:
+                None
+
+            This function takes F1-scores of three different models (SGD, Random Forest, Naive Bayes)
+            and determines which model has the highest F1-score. It then prints the name of the best
+            model.
+
+            Example:
+                best_model(0.75, 0.82, 0.79)
+                Output: The best model is: Random Forest
+            """
+            f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
+            best_model = max(f_scores, key=lambda x: f_scores[x])
+            print("The best model is: ", best_model)
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Best model', description='Determines the best model based on the F1-scores of different models.')
+        _parser.add_argument("--sgd", dest="sgd", type=str, required=True, default=argparse.SUPPRESS)
+        _parser.add_argument("--random-forest", dest="random_forest", type=str, required=True, default=argparse.SUPPRESS)
+        _parser.add_argument("--naive-bayes", dest="naive_bayes", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = best_model(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: gaussian-naive-bayes-classifier-ClassificationReport}
+      - {name: random-forest-classifier-ClassificationReport}
+      - {name: stochastic-gradient-descent-classifier-ClassificationReport}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Determines
+          the best model based on the F1-scores of different models.", "implementation":
+          {"container": {"args": ["--sgd", {"inputValue": "sgd"}, "--random-forest",
+          {"inputValue": "random_forest"}, "--naive-bayes", {"inputValue": "naive_bayes"}],
+          "command": ["sh", "-ec", "program_path=$(mktemp)\nprintf \"%s\" \"$0\" >
+          \"$program_path\"\npython3 -u \"$program_path\" \"$@\"\n", "def best_model(sgd,
+          random_forest, naive_bayes):\n    \"\"\"\n    Determines the best model
+          based on the F1-scores of different models.\n\n    Args:\n        sgd (float):
+          The F1-score of the SGD model.\n        random_forest (float): The F1-score
+          of the Random Forest model.\n        naive_bayes (float): The F1-score of
+          the Naive Bayes model.\n\n    Returns:\n        None\n\n    This function
+          takes F1-scores of three different models (SGD, Random Forest, Naive Bayes)\n    and
+          determines which model has the highest F1-score. It then prints the name
+          of the best\n    model.\n\n    Example:\n        best_model(0.75, 0.82,
+          0.79)\n        Output: The best model is: Random Forest\n    \"\"\"\n    f_scores
+          = {''SGD'': sgd, ''Random Forest'': random_forest, ''Naive Bayes'': naive_bayes}\n    best_model
+          = max(f_scores, key=lambda x: f_scores[x])\n    print(\"The best model is:
+          \", best_model)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Best
+          model'', description=''Determines the best model based on the F1-scores
+          of different models.'')\n_parser.add_argument(\"--sgd\", dest=\"sgd\", type=str,
+          required=True, default=argparse.SUPPRESS)\n_parser.add_argument(\"--random-forest\",
+          dest=\"random_forest\", type=str, required=True, default=argparse.SUPPRESS)\n_parser.add_argument(\"--naive-bayes\",
+          dest=\"naive_bayes\", type=str, required=True, default=argparse.SUPPRESS)\n_parsed_args
+          = vars(_parser.parse_args())\n\n_outputs = best_model(**_parsed_args)\n"],
+          "image": "python:3.7"}}, "inputs": [{"description": "The F1-score of the
+          SGD model.", "name": "sgd", "type": "String"}, {"description": "The F1-score
+          of the Random Forest model.", "name": "random_forest", "type": "String"},
+          {"description": "The F1-score of the Naive Bayes model.", "name": "naive_bayes",
+          "type": "String"}], "name": "Best model"}', pipelines.kubeflow.org/component_ref: '{}',
+        pipelines.kubeflow.org/arguments.parameters: '{"naive_bayes": "{{inputs.parameters.gaussian-naive-bayes-classifier-ClassificationReport}}",
+          "random_forest": "{{inputs.parameters.random-forest-classifier-ClassificationReport}}",
+          "sgd": "{{inputs.parameters.stochastic-gradient-descent-classifier-ClassificationReport}}"}'}
+  - name: gaussian-naive-bayes-classifier
+    container:
+      args: []
+      command: [python, naive_bayes.py, --data, /tmp/inputs/Data/data, --f1_score,
+        /tmp/outputs/F1-score/data, --classification_report, /tmp/outputs/ClassificationReport/data,
+        --best_params, /tmp/outputs/BestParameters/data, --model, /tmp/outputs/Model/data]
+      image: prg10/naive_bayes
+    inputs:
+      artifacts:
+      - {name: load-data-function-Data, path: /tmp/inputs/Data/data}
+    outputs:
+      parameters:
+      - name: gaussian-naive-bayes-classifier-ClassificationReport
+        valueFrom: {path: /tmp/outputs/ClassificationReport/data}
+      - name: gaussian-naive-bayes-classifier-F1-score
+        valueFrom: {path: /tmp/outputs/F1-score/data}
+      artifacts:
+      - {name: gaussian-naive-bayes-classifier-BestParameters, path: /tmp/outputs/BestParameters/data}
+      - {name: gaussian-naive-bayes-classifier-ClassificationReport, path: /tmp/outputs/ClassificationReport/data}
+      - {name: gaussian-naive-bayes-classifier-F1-score, path: /tmp/outputs/F1-score/data}
+      - {name: gaussian-naive-bayes-classifier-Model, path: /tmp/outputs/Model/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Trains
+          a GaussianNB classifier", "implementation": {"container": {"command": ["python",
+          "naive_bayes.py", "--data", {"inputPath": "Data"}, "--f1_score", {"outputPath":
+          "F1-score"}, "--classification_report", {"outputPath": "ClassificationReport"},
+          "--best_params", {"outputPath": "BestParameters"}, "--model", {"outputPath":
+          "Model"}], "image": "prg10/naive_bayes"}}, "inputs": [{"description": "Path
+          where data is stored.", "name": "Data", "type": "LocalPath"}], "name": "Gaussian
+          Naive Bayes classifier", "outputs": [{"description": "String representing
+          F1-score metric", "name": "F1-score", "type": "String"}, {"description":
+          "String representing the classification report of the model", "name": "ClassificationReport",
+          "type": "String"}, {"description": "String representing the best parameters
+          for the model obtained from the grid search", "name": "BestParameters",
+          "type": "String"}, {"description": "Path where the model dump will be stored",
+          "name": "Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "c3a390c3a9a5757a62068c5b0c42680c6657f06dab7471c23b3a379bb9f4f987", "url":
+          "naive_bayes/naive_bayes.yaml"}'}
+  - name: load-data-function
+    container:
+      args: []
+      command: [python, load_data.py, --data, /tmp/outputs/Data/data, --scaler, /tmp/outputs/Scaler/data]
+      image: prg10/load_data
+    outputs:
+      artifacts:
+      - {name: load-data-function-Data, path: /tmp/outputs/Data/data}
+      - {name: load-data-function-Scaler, path: /tmp/outputs/Scaler/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Load
+          data from local dataset", "implementation": {"container": {"command": ["python",
+          "load_data.py", "--data", {"outputPath": "Data"}, "--scaler", {"outputPath":
+          "Scaler"}], "image": "prg10/load_data"}}, "name": "Load Data Function",
+          "outputs": [{"description": "Path where data will be stored.", "name": "Data",
+          "type": "LocalPath"}, {"description": "Path where the scaler dump will be
+          stored.", "name": "Scaler", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "30b280895a03eaa2b76a49e16b2f5ede31d026ba0198bd4107308598bc090c5f", "url":
+          "load_data/load_data.yaml"}'}
+  - name: malicious-url-pipeline
+    dag:
+      tasks:
+      - name: best-model
+        template: best-model
+        dependencies: [gaussian-naive-bayes-classifier, random-forest-classifier,
+          stochastic-gradient-descent-classifier]
+        arguments:
+          parameters:
+          - {name: gaussian-naive-bayes-classifier-ClassificationReport, value: '{{tasks.gaussian-naive-bayes-classifier.outputs.parameters.gaussian-naive-bayes-classifier-ClassificationReport}}'}
+          - {name: random-forest-classifier-ClassificationReport, value: '{{tasks.random-forest-classifier.outputs.parameters.random-forest-classifier-ClassificationReport}}'}
+          - {name: stochastic-gradient-descent-classifier-ClassificationReport, value: '{{tasks.stochastic-gradient-descent-classifier.outputs.parameters.stochastic-gradient-descent-classifier-ClassificationReport}}'}
+      - name: gaussian-naive-bayes-classifier
+        template: gaussian-naive-bayes-classifier
+        dependencies: [load-data-function]
+        arguments:
+          artifacts:
+          - {name: load-data-function-Data, from: '{{tasks.load-data-function.outputs.artifacts.load-data-function-Data}}'}
+      - {name: load-data-function, template: load-data-function}
+      - name: random-forest-classifier
+        template: random-forest-classifier
+        dependencies: [load-data-function]
+        arguments:
+          artifacts:
+          - {name: load-data-function-Data, from: '{{tasks.load-data-function.outputs.artifacts.load-data-function-Data}}'}
+      - name: show-results
+        template: show-results
+        dependencies: [gaussian-naive-bayes-classifier, random-forest-classifier,
+          stochastic-gradient-descent-classifier]
+        arguments:
+          parameters:
+          - {name: gaussian-naive-bayes-classifier-F1-score, value: '{{tasks.gaussian-naive-bayes-classifier.outputs.parameters.gaussian-naive-bayes-classifier-F1-score}}'}
+          - {name: random-forest-classifier-F1-score, value: '{{tasks.random-forest-classifier.outputs.parameters.random-forest-classifier-F1-score}}'}
+          - {name: stochastic-gradient-descent-classifier-F1-score, value: '{{tasks.stochastic-gradient-descent-classifier.outputs.parameters.stochastic-gradient-descent-classifier-F1-score}}'}
+      - name: stochastic-gradient-descent-classifier
+        template: stochastic-gradient-descent-classifier
+        dependencies: [load-data-function]
+        arguments:
+          artifacts:
+          - {name: load-data-function-Data, from: '{{tasks.load-data-function.outputs.artifacts.load-data-function-Data}}'}
+  - name: random-forest-classifier
+    container:
+      args: []
+      command: [python, random_forest.py, --data, /tmp/inputs/Data/data, --f1_score,
+        /tmp/outputs/F1-score/data, --classification_report, /tmp/outputs/ClassificationReport/data,
+        --best_params, /tmp/outputs/BestParameters/data, --model, /tmp/outputs/Model/data]
+      image: prg10/random_forest
+    inputs:
+      artifacts:
+      - {name: load-data-function-Data, path: /tmp/inputs/Data/data}
+    outputs:
+      parameters:
+      - name: random-forest-classifier-ClassificationReport
+        valueFrom: {path: /tmp/outputs/ClassificationReport/data}
+      - name: random-forest-classifier-F1-score
+        valueFrom: {path: /tmp/outputs/F1-score/data}
+      artifacts:
+      - {name: random-forest-classifier-BestParameters, path: /tmp/outputs/BestParameters/data}
+      - {name: random-forest-classifier-ClassificationReport, path: /tmp/outputs/ClassificationReport/data}
+      - {name: random-forest-classifier-F1-score, path: /tmp/outputs/F1-score/data}
+      - {name: random-forest-classifier-Model, path: /tmp/outputs/Model/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Trains
+          a random forest classifier", "implementation": {"container": {"command":
+          ["python", "random_forest.py", "--data", {"inputPath": "Data"}, "--f1_score",
+          {"outputPath": "F1-score"}, "--classification_report", {"outputPath": "ClassificationReport"},
+          "--best_params", {"outputPath": "BestParameters"}, "--model", {"outputPath":
+          "Model"}], "image": "prg10/random_forest"}}, "inputs": [{"description":
+          "Path where data is stored.", "name": "Data", "type": "LocalPath"}], "name":
+          "Random Forest classifier", "outputs": [{"description": "String representing
+          F1-score metric", "name": "F1-score", "type": "String"}, {"description":
+          "String representing the classification report of the model", "name": "ClassificationReport",
+          "type": "String"}, {"description": "String representing the best parameters
+          for the model obtained from the grid search", "name": "BestParameters",
+          "type": "String"}, {"description": "Path where the model dump will be stored",
+          "name": "Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "4ad586b4e96a6a5318590365700e911b40be59ab822427ba593f7feb4a1b18e2", "url":
+          "random_forest/random_forest.yaml"}'}
+  - name: show-results
+    container:
+      args: [--sgd, '{{inputs.parameters.stochastic-gradient-descent-classifier-F1-score}}',
+        --random-forest, '{{inputs.parameters.random-forest-classifier-F1-score}}',
+        --naive-bayes, '{{inputs.parameters.gaussian-naive-bayes-classifier-F1-score}}']
+      command:
+      - sh
+      - -ec
+      - |
+        program_path=$(mktemp)
+        printf "%s" "$0" > "$program_path"
+        python3 -u "$program_path" "$@"
+      - |
+        def show_results(sgd, random_forest, naive_bayes):
+            """
+            Display classification accuracy results for different models.
+
+            Args:
+                sgd (float): Accuracy score for Stochastic Gradient Descent model.
+                random_forest (float): Accuracy score for Random Forest model.
+                naive_bayes (float): Accuracy score for GaussianNB  model.
+
+            Returns:
+                None
+
+            The function takes accuracy scores for different classification models and prints the results to the console.
+
+            Note:
+                Accuracy scores should be in the range [0, 1], where 1 represents 100% accuracy.
+            """
+
+            print(f"Stochastic Gradient Descent (f1): {sgd}")
+            print(f"Random Forest (f1): {random_forest}")
+            print(f"Naive Bayes (f1): {naive_bayes}")
+
+        import argparse
+        _parser = argparse.ArgumentParser(prog='Show results', description='Display classification accuracy results for different models.')
+        _parser.add_argument("--sgd", dest="sgd", type=str, required=True, default=argparse.SUPPRESS)
+        _parser.add_argument("--random-forest", dest="random_forest", type=str, required=True, default=argparse.SUPPRESS)
+        _parser.add_argument("--naive-bayes", dest="naive_bayes", type=str, required=True, default=argparse.SUPPRESS)
+        _parsed_args = vars(_parser.parse_args())
+
+        _outputs = show_results(**_parsed_args)
+      image: python:3.7
+    inputs:
+      parameters:
+      - {name: gaussian-naive-bayes-classifier-F1-score}
+      - {name: random-forest-classifier-F1-score}
+      - {name: stochastic-gradient-descent-classifier-F1-score}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Display
+          classification accuracy results for different models.", "implementation":
+          {"container": {"args": ["--sgd", {"inputValue": "sgd"}, "--random-forest",
+          {"inputValue": "random_forest"}, "--naive-bayes", {"inputValue": "naive_bayes"}],
+          "command": ["sh", "-ec", "program_path=$(mktemp)\nprintf \"%s\" \"$0\" >
+          \"$program_path\"\npython3 -u \"$program_path\" \"$@\"\n", "def show_results(sgd,
+          random_forest, naive_bayes):\n    \"\"\"\n    Display classification accuracy
+          results for different models.\n\n    Args:\n        sgd (float): Accuracy
+          score for Stochastic Gradient Descent model.\n        random_forest (float):
+          Accuracy score for Random Forest model.\n        naive_bayes (float): Accuracy
+          score for GaussianNB  model.\n\n    Returns:\n        None\n\n    The function
+          takes accuracy scores for different classification models and prints the
+          results to the console.\n\n    Note:\n        Accuracy scores should be
+          in the range [0, 1], where 1 represents 100% accuracy.\n    \"\"\"\n\n    print(f\"Stochastic
+          Gradient Descent (f1): {sgd}\")\n    print(f\"Random Forest (f1): {random_forest}\")\n    print(f\"Naive
+          Bayes (f1): {naive_bayes}\")\n\nimport argparse\n_parser = argparse.ArgumentParser(prog=''Show
+          results'', description=''Display classification accuracy results for different
+          models.'')\n_parser.add_argument(\"--sgd\", dest=\"sgd\", type=str, required=True,
+          default=argparse.SUPPRESS)\n_parser.add_argument(\"--random-forest\", dest=\"random_forest\",
+          type=str, required=True, default=argparse.SUPPRESS)\n_parser.add_argument(\"--naive-bayes\",
+          dest=\"naive_bayes\", type=str, required=True, default=argparse.SUPPRESS)\n_parsed_args
+          = vars(_parser.parse_args())\n\n_outputs = show_results(**_parsed_args)\n"],
+          "image": "python:3.7"}}, "inputs": [{"description": "Accuracy score for
+          Stochastic Gradient Descent model.", "name": "sgd", "type": "String"}, {"description":
+          "Accuracy score for Random Forest model.", "name": "random_forest", "type":
+          "String"}, {"description": "Accuracy score for GaussianNB  model.", "name":
+          "naive_bayes", "type": "String"}], "name": "Show results"}', pipelines.kubeflow.org/component_ref: '{}',
+        pipelines.kubeflow.org/arguments.parameters: '{"naive_bayes": "{{inputs.parameters.gaussian-naive-bayes-classifier-F1-score}}",
+          "random_forest": "{{inputs.parameters.random-forest-classifier-F1-score}}",
+          "sgd": "{{inputs.parameters.stochastic-gradient-descent-classifier-F1-score}}"}'}
+  - name: stochastic-gradient-descent-classifier
+    container:
+      args: []
+      command: [python, sgd.py, --data, /tmp/inputs/Data/data, --f1_score, /tmp/outputs/F1-score/data,
+        --classification_report, /tmp/outputs/ClassificationReport/data, --best_params,
+        /tmp/outputs/BestParameters/data, --model, /tmp/outputs/Model/data]
+      image: prg10/sgd
+    inputs:
+      artifacts:
+      - {name: load-data-function-Data, path: /tmp/inputs/Data/data}
+    outputs:
+      parameters:
+      - name: stochastic-gradient-descent-classifier-ClassificationReport
+        valueFrom: {path: /tmp/outputs/ClassificationReport/data}
+      - name: stochastic-gradient-descent-classifier-F1-score
+        valueFrom: {path: /tmp/outputs/F1-score/data}
+      artifacts:
+      - {name: stochastic-gradient-descent-classifier-BestParameters, path: /tmp/outputs/BestParameters/data}
+      - {name: stochastic-gradient-descent-classifier-ClassificationReport, path: /tmp/outputs/ClassificationReport/data}
+      - {name: stochastic-gradient-descent-classifier-F1-score, path: /tmp/outputs/F1-score/data}
+      - {name: stochastic-gradient-descent-classifier-Model, path: /tmp/outputs/Model/data}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.22
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+      annotations: {pipelines.kubeflow.org/component_spec: '{"description": "Trains
+          a SGD Classifier", "implementation": {"container": {"command": ["python",
+          "sgd.py", "--data", {"inputPath": "Data"}, "--f1_score", {"outputPath":
+          "F1-score"}, "--classification_report", {"outputPath": "ClassificationReport"},
+          "--best_params", {"outputPath": "BestParameters"}, "--model", {"outputPath":
+          "Model"}], "image": "prg10/sgd"}}, "inputs": [{"description": "Path where
+          data is stored.", "name": "Data", "type": "LocalPath"}], "name": "Stochastic
+          Gradient Descent classifier", "outputs": [{"description": "String representing
+          F1-score metric", "name": "F1-score", "type": "String"}, {"description":
+          "String representing the classification report of the model", "name": "ClassificationReport",
+          "type": "String"}, {"description": "String representing the best parameters
+          for the model obtained from the grid search", "name": "BestParameters",
+          "type": "String"}, {"description": "Path where the model dump will be stored",
+          "name": "Model", "type": "LocalPath"}]}', pipelines.kubeflow.org/component_ref: '{"digest":
+          "265ac23517cf80542d92c50e35a4370e94f24602f6965faa8789b06009fcfa7c", "url":
+          "sgd/sgd.yaml"}'}
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
