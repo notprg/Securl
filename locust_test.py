@@ -5,4 +5,4 @@ class User(HttpUser):
 
     @task
     def index(self):
-        self.client.post("https://api.segment.io/v1/t")
+        self.client.get("/")

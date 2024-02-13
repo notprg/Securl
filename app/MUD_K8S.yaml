@@ -6,7 +6,7 @@ metadata:
     app: malicious-detection-app
   namespace: default
 spec:
-  replicas: 5
+  replicas: 2
   selector:
     matchLabels:
       app: malicious-detection-app
@@ -20,8 +20,8 @@ spec:
         image: prg10/malicious_url_detection_v2
         resources:
           requests:
-            cpu: "500m"
-            memory: "256Mi"
+            cpu: "100m"
+            memory: "50Mi"
 
 ---
 apiVersion: v1
