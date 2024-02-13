@@ -2,8 +2,6 @@ import streamlit as st
 import joblib
 import pandas as pd
 import base64
-import sys
-sys.path.append("../")
 from url_utilities.url import *
 
 image_urls = [
