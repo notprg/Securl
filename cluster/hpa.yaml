@@ -1,17 +1,17 @@
 kind: HTTPScaledObject
 apiVersion: http.keda.sh/v1alpha1
 metadata:
-  name: malicious-detection
+    name: malicious-detection-hpa
 spec:
-  hosts:
-  - "localhost"
-  targetPendingRequests: 100
-  scaleTargetRef:
-    name: malicious-detection
-    kind: Deployment
-    apiVersion: apps/v1
-    service: malicious-detection
-    port: 30070
-  replicas:
-    min: 2
-    max: 15
+    hosts:
+    - 127.0.0.1
+    scaleTargetRef:
+        name: malicious-detection
+        kind: Deployment
+        apiVersion: apps/v1
+        service: malicious-detection
+        port: 80
+    replicas:
+        min: 2
+        max: 15
+    targetPendingRequests: 100
