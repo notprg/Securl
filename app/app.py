@@ -134,7 +134,7 @@ with st.sidebar.expander("About Us"):
     prg, rl = st.columns(2)
     with prg:
         st.write("<span style='font-size: 20px;'><b>Rocco Pizzulo</b></span>", unsafe_allow_html=True)
-        st.image("images/prg.jpg")
+        st.image("images/prg.jpeg")
         st.write("<span style='font-size: 13px;'><b>Computer Engineer</b></span>", unsafe_allow_html=True)
         # st.image("images/linkedin.png", width=90)
         st.markdown(
@@ -149,7 +149,7 @@ with st.sidebar.expander("About Us"):
 
     with rl:
         st.write("<span style='font-size: 20px;'><b>Luigi Russo</b></span>", unsafe_allow_html=True)
-        st.image("images/prg.jpg")
+        st.image("images/rl.jpeg")
         st.write("<span style='font-size: 13px;'><b>Computer Engineer</b></span>", unsafe_allow_html=True)
         # st.image("images/linkedin.png", width=90)
         st.markdown(
