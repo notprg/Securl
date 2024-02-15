@@ -49,3 +49,16 @@ metadata:
   name: securl-ingress
   annotations:
      appprotectdos.f5.com/app-protect-dos-resource: "default/dos-protected"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "localhost"
+      http:
+        paths:
+          - backend:
+              service:
+                name: malicious-detection
+                port:
+                  number: 30070
+            path: /
+            pathType: Prefix
