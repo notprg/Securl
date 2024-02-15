@@ -11,21 +11,23 @@ def _sgd(args):
     Executes Stochastic Gradient Descent (SGD) classification based on the provided arguments.
 
     Args:
-        args (argparse.Namespace): Command-line arguments containing the paths to the input data and the output accuracy
-                                   file.
+        args (argparse.Namespace): Command-line arguments containing the paths to the input data, the output F1-score
+                                   file, the classification report file and the best params file.
 
     Returns:
         None
 
     The function reads input data from a JSON file specified by the 'args.data' parameter. The data is expected to
     contain training and testing sets ('x_train', 'y_train', 'x_test', 'y_test'). It then trains an SGDClassifier on the
-    training data and evaluates its performance on the testing data. The accuracy score is calculated using the
-    'accuracy_score' function from the scikit-learn library.
-    Finally, the accuracy score is written to an output file specified by 'args.accuracy'.
+    training data and evaluates its performance on the testing data. The F1-score is calculated using the
+    'f1_score' function from the scikit-learn library.
+    Finally, the F1-score is written to an output file specified by 'args.f1-score', the best parameters are written
+    in an output file specified by 'args.best_params' and the classification report is written in an output file 
+    specified by 'args.classification_report.
 
     Notes:
         - Ensure that the input data file is in JSON format and follows the expected structure.
-        - The output accuracy file will be overwritten if it already exists.
+        - The output files will be overwritten if they already exists.
     """
 
     with open(args.data) as data_file:

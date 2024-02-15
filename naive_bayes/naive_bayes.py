@@ -11,21 +11,23 @@ def _naive_bayes(args):
     Executes Naive-Bayes classification based on the provided arguments.
 
     Args:
-        args (argparse.Namespace): Command-line arguments containing the paths to the input data and the output accuracy
-                                   file.
+        args (argparse.Namespace): Command-line arguments containing the paths to the input data, the output F1-score
+                                   file, the classification report file and the best params file.
 
     Returns:
         None
 
     The function reads input data from a JSON file specified by the 'args.data' parameter. The data is expected to
     contain training and validation sets ('x_train', 'y_train', 'x_test', 'y_test'). It then trains a Gaussian NB
-    model on the training data and evaluates its performance on the testing data. The accuracy score is calculated using
+    model on the training data and evaluates its performance on the testing data. The F1-score is calculated using
     the 'f1_score' function from the scikit-learn library.
-    Finally, the accuracy score is written to an output file specified by 'args.f1-score'.
+    Finally, the F1-score is written to an output file specified by 'args.f1-score', the best parameters are written
+    in an output file specified by 'args.best_params' and the classification report is written in an output file 
+    specified by 'args.classification_report.
 
     Notes:
         - Ensure that the input data file is in JSON format and follows the expected structure.
-        - The output accuracy file will be overwritten if it already exists.
+        - The output files will be overwritten if they already exist.
     """
     with open(args.data) as data_file:
         data = json.load(data_file)

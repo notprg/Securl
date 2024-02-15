@@ -31,7 +31,7 @@ def best_model(sgd: str, random_forest: str, naive_bayes: str) -> None:
 @func_to_container_op
 def show_results(sgd: str, random_forest: str, naive_bayes: str) -> None:
     """
-    Display classification accuracy results for different models.
+    Display classification reports for different models.
 
     Args:
         sgd (float): F1-score for Stochastic Gradient Descent model.
@@ -41,10 +41,7 @@ def show_results(sgd: str, random_forest: str, naive_bayes: str) -> None:
     Returns:
         None
 
-    The function takes accuracy scores for different classification models and prints the results to the console.
-
-    Note:
-        Accuracy scores should be in the range [0, 1], where 1 represents 100% accuracy.
+    The function takes F1-scores for different classification models and prints the results to the console.
     """
 
     print(f"Stochastic Gradient Descent (f1): {sgd}")
