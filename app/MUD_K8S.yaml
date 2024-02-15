@@ -41,3 +41,11 @@ spec:
   - port: 8501
     targetPort: 8501
     nodePort: 30080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: securl-ingress
+  annotations:
+     appprotectdos.f5.com/app-protect-dos-resource: "default/dos-protected"
