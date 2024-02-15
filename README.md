@@ -32,68 +32,84 @@ Ensure that you have the following tools installed on your system:
    kind create cluster --config=cluster/cluster_config.yaml
    ```
 
-4. **Create resources from the MUD_K8S.yaml file:**
+4. **Install CRDs required by NGINX:**
+   
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.4.2/deploy/crds.yaml
+   kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.4.2/deploy/crds-nap-waf.yaml
+   kubectl apply -f https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.4.2/deploy/crds-nap-dos.yaml
+   ```
+
+5. **Create resources from the MUD_K8S.yaml file:**
    
    ```bash
    kubectl create --filename app/MUD_K8S.yaml
    ```
 
-5. **Apply the Vertical Pod Autoscaler (VPA) CRDs:**
+6. **Apply the Vertical Pod Autoscaler (VPA) CRDs:**
    
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-v1-crd.yaml
    ```
 
-6. **Apply the VPA RBAC:**
+7. **Apply the VPA RBAC:**
    
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-v1-rbac.yaml
    ```
 
-7. **Create the metric server:**
+8. **Create the metric server:**
    
    ```bash
    kubectl create --filename cluster/metric_server.yaml
    ```
 
-8. **Create the VPA:**
+9. **Create the VPA:**
    
    ```bash
    kubectl create --filename cluster/vpa.yaml
    ```
 
-9. **Run the KEDA script:**
-   
-   ```bash
-   ./KEDA.sh
-   ```
+10. **Run the KEDA script:**
+    
+    ```bash
+    ./KEDA.sh
+    ```
 
-10. **Create the Horizontal Pod Autoscaler (HPA):**
+11. **Create the Horizontal Pod Autoscaler (HPA):**
     
     ```bash
     kubectl create --filename cluster/hpa.yaml
     ```
 
-11. **Apply the Kubernetes Dashboard deployment:**
+12. **Deploy DoS protection:**
+    
+    ```bash
+    kubectl apply -f NGINX/DosProtectedResource.yaml 
+    kubectl apply -f NGINX/APDosLogConf.yaml 
+    kubectl apply -f NGINX/APDosPolicy.yaml 
+    ```
+
+13. **Apply the Kubernetes Dashboard deployment:**
     
     ```bash
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
     ```
 
-12. **Apply the admin user and role binding:**
+14. **Apply the admin user and role binding:**
     
     ```bash
     kubectl apply -f dashboard-adminuser.yaml
     kubectl apply -f cluster_rolebinding.yaml
     ```
 
-13. **Create a token for the admin user and save it to a file:**
+15. **Create a token for the admin user and save it to a file:**
     
     ```bash
     kubectl -n kubernetes-dashboard create token admin-user > token.txt
     ```
 
-14. **Start the Kubernetes Dashboard:**
+16. **Start the Kubernetes Dashboard:**
     
     ```bash
     kubectl proxy
