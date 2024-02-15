@@ -9,6 +9,7 @@ Ensure that you have the following tools installed on your system:
 - Docker
 - kind
 - kubectl
+- helm
 
 ## Note
    **Note**: After the creation of each pod, make sure that all pods are in a Running and Ready state before continuing with the next command. To do this, run the following command:
