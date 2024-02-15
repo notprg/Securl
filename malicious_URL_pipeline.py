@@ -23,10 +23,9 @@ def best_model(sgd: str, random_forest: str, naive_bayes: str) -> None:
         best_model(0.75, 0.82, 0.79)
         Output: The best model is: Random Forest
     """
-    #f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
-    #best_model = max(f_scores, key=lambda x: f_scores[x])
-    # print("The best model is: ", best_model)
-    print("ok")
+    f_scores = {'SGD': sgd, 'Random Forest': random_forest, 'Naive Bayes': naive_bayes}
+    best_model = max(f_scores, key=lambda x: f_scores[x])
+    print("The best model is: ", best_model)
 
 
 @func_to_container_op
@@ -35,9 +34,9 @@ def show_results(sgd: str, random_forest: str, naive_bayes: str) -> None:
     Display classification accuracy results for different models.
 
     Args:
-        sgd (float): Accuracy score for Stochastic Gradient Descent model.
-        random_forest (float): Accuracy score for Random Forest model.
-        naive_bayes (float): Accuracy score for GaussianNB  model.
+        sgd (float): F1-score for Stochastic Gradient Descent model.
+        random_forest (float): F1-score for Random Forest model.
+        naive_bayes (float): F1-score for GaussianNB  model.
 
     Returns:
         None
@@ -59,8 +58,8 @@ def malicious_URL_pipeline():
     """
     Kubeflow Pipeline for Malicious URL Detection.
 
-    This pipeline automates the process of loading data and applying multiple classifiers (Decision Tree, Random Forest,
-    k-Neighbors, and SGD) for the detection of malicious URLs. The results are then displayed using the 'show_results'
+    This pipeline automates the process of loading data and applying multiple classifiers (Random Forest,
+    GaussianNB, and SGD) for the detection of malicious URLs. The results are then displayed using the 'show_results'
     component.
 
     Components:
