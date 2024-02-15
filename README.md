@@ -9,16 +9,18 @@ Ensure that you have the following tools installed on your system:
 - Docker
 - kind
 - kubectl
+- helm
 
-## Steps
-
-1. **Start Docker:** Before you begin, make sure Docker is running.
-   
+## Note
    **Note**: After the creation of each pod, make sure that all pods are in a Running and Ready state before continuing with the next command. To do this, run the following command:
    
    ```bash
    kubectl get pods -A
    ```
+
+## Steps
+
+1. **Start Docker:** Before you begin, make sure Docker is running.
 
 2. **Delete any existing Kubernetes cluster with kind:**
    
@@ -49,13 +51,13 @@ Ensure that you have the following tools installed on your system:
 6. **Apply the Vertical Pod Autoscaler (VPA) CRDs:**
    
    ```bash
-   kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-v1-crd.yaml
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-v1-crd-gen.yaml
    ```
 
 7. **Apply the VPA RBAC:**
    
    ```bash
-   kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-v1-rbac.yaml
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/vpa-release-1.0/vertical-pod-autoscaler/deploy/vpa-rbac.yaml
    ```
 
 8. **Create the metric server:**
