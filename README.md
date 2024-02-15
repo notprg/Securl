@@ -12,11 +12,12 @@ Ensure that you have the following tools installed on your system:
 - helm
 
 ## Note
+
    **Note**: After the creation of each pod, make sure that all pods are in a Running and Ready state before continuing with the next command. To do this, run the following command:
-   
-   ```bash
-   kubectl get pods -A
-   ```
+
+```bash
+kubectl get pods -A
+```
 
 ## Steps
 
@@ -101,8 +102,8 @@ Ensure that you have the following tools installed on your system:
 14. **Apply the admin user and role binding:**
     
     ```bash
-    kubectl apply -f dashboard-adminuser.yaml
-    kubectl apply -f cluster_rolebinding.yaml
+    kubectl apply -f cluster/dashboard-adminuser.yaml
+    kubectl apply -f cluster/cluster_rolebinding.yaml
     ```
 
 15. **Create a token for the admin user and save it to a file:**
